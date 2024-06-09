@@ -12,9 +12,7 @@ const courseSchema = new mongoose.Schema({
     videos: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Video'
-    }],
-    // Other course details like duration, syllabus, etc.
-});
+    }]
+},{timestamps:true});
 
-const Course = mongoose.model('Course', courseSchema);
-module.exports = Course;
+export const Course = mongoose.model('Course', courseSchema)

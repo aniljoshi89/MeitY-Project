@@ -18,9 +18,7 @@ const commentSchema = new mongoose.Schema({
     createdAt: { 
         type: Date, 
         default: Date.now 
-    },
-    // Other comment details like likes, replies, etc.
-});
+    }
+},{timestamps:true});
 
-const Comment = mongoose.model('Comment', commentSchema);
-module.exports = Comment;
+export const Comment = mongoose.model('Comment', commentSchema)

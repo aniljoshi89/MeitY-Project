@@ -3,20 +3,18 @@ import mongoose from "mongoose"
 const enrollmentSchema = new mongoose.Schema({
   user: { 
     type: mongoose.Schema.Types.ObjectId, 
-    ref: 'user', 
+    ref: 'User', 
     required: true 
   },
   course: { 
     type: mongoose.Schema.Types.ObjectId, 
-    ref: 'course', 
+    ref: 'Course', 
     required: true 
   },
   enrolledAt: { 
     type: Date, 
     default: Date.now 
-  },
-  // Other enrollment details like progress, completion status, etc.
-});
+  }
+},{timestamps:true});
 
-const Enrollment = mongoose.model('Enrollment', enrollmentSchema);
-module.exports = Enrollment;
+export const Enrollment = mongoose.model('Enrollment', enrollmentSchema)
