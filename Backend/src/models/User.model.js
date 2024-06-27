@@ -1,6 +1,6 @@
 // models/User.js
 
-import mongoose from "mongoose"
+import mongoose, {Schema} from "mongoose";
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 
@@ -31,7 +31,7 @@ const UserSchema = new Schema({
 UserSchema.pre("save",async function(next){
   if(this.isModified("password")) return next();
   
-  this.password=bcrypt.hash(this.password,10)
+  this.password= await bcrypt.hash(this.password,10)
   next()
 })
 //for checking password is matched or not

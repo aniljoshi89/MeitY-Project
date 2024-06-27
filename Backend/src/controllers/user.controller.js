@@ -1,5 +1,7 @@
 import {asyncHandler} from "../utils/asyncHandler.js";
 import {ApiError} from "../utils/ApiError.js"
+import { User} from "../models/user.model.js"
+import { ApiResponse } from "../utils/ApiResponse.js";
 
 const registerUser=asyncHandler (async(req,res)=>{
     //getting user details from frontend
@@ -12,7 +14,7 @@ const registerUser=asyncHandler (async(req,res)=>{
 
     // Check if the user already exists
     const existedUser = await User.findOne({
-        $or: [{ username }, { email }]
+        $or: [{ username: username.toLowerCase() }, { email }]
     })
 
     if (existedUser) {
@@ -21,7 +23,7 @@ const registerUser=asyncHandler (async(req,res)=>{
 
     //creating new user entry in dB
     const user = await User.create({
-        fullName,
+        username,
         email, 
         password,
         username: username.toLowerCase()
