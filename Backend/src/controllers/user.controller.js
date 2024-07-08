@@ -1,12 +1,14 @@
 import {asyncHandler} from "../utils/asyncHandler.js";
-import {ApiError} from "../utils/ApiError.js"
-import { User} from "../models/user.model.js"
+import {ApiError} from "../utils/ApiError.js";
+import { User} from "../models/User.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
 
 const registerUser=asyncHandler (async(req,res)=>{
     //getting user details from frontend
-    const { username, email, password} = req.body;
-    console.log(req.body);
+    const {username, email, password} = req.body;
+    console.log(username, email, password);
     
     //validation checking
     if([username, email, password].some((field)=>field?.trim()==="")){
@@ -15,7 +17,7 @@ const registerUser=asyncHandler (async(req,res)=>{
 
     // Check if the user already exists
     const existedUser = await User.findOne({
-        $or: [{ username: username.toLowerCase() }, { email }]
+        $or: [{ username }, { email }]
     })
 
     if (existedUser) {
@@ -24,7 +26,6 @@ const registerUser=asyncHandler (async(req,res)=>{
 
     //creating new user entry in dB
     const user = await User.create({
-        username,
         email, 
         password,
         username: username.toLowerCase()

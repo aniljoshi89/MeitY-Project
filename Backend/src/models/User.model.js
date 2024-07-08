@@ -1,8 +1,8 @@
 // models/User.js
 
 import mongoose, {Schema} from "mongoose";
-import jwt from "jsonwebtoken"
-import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 // Define the User schema
 const UserSchema = new Schema({
@@ -10,11 +10,13 @@ const UserSchema = new Schema({
     type: String,
     required: true,
     unique: true,
-    trim: true
+    trim: true,
+    index:true
   },
   email: {
     type: String,
     required: true,
+    lowercase:true,
     unique: true,
     match: [/.+@.+\..+/, 'Please enter a valid email address']
   },
@@ -37,6 +39,30 @@ UserSchema.pre("save",async function(next){
 //for checking password is matched or not
 UserSchema.methods.isPasswordCorrect=async function(password){
   return  await bcrypt.compare(password,this.password)
+}
+//generating access token
+UserSchema.methods.generateAccessToken=function(){
+  return jwt.sign({
+    _id:this._id,
+    email:this.email,
+    username:this.username
+  },
+   process.env.ACCESS_TOKEN_SECRET,
+   {
+    expiresIn:process.env.ACCESS_TOKEN_EXPIRY
+   }
+)
+}
+//generating refresh token
+UserSchema.methods.generateRefreshToken=function(){
+  return jwt.sign({
+    _id:this._id
+  },
+   process.env.REFRESH_TOKEN_SECRET,
+   {
+    expiresIn:process.env.REFRESH_TOKEN_EXPIRY
+   }
+)
 }
 
 // Create the User model
