@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from './AuthProvider';
 import logo from '../images/logo.jpg';
 
 function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { authState, logout } = useAuth();
 
     return (
         <>
@@ -24,9 +26,18 @@ function Navbar() {
                     <Link to="/about" className='mx-[10px] hover:text-indigo-500 cursor-pointer'>About</Link>
                     <Link to="/contact" className='mx-[10px] hover:text-indigo-500 cursor-pointer'>Contact</Link>
                 </div>
-                <div className='hidden md:flex'>
-                    <Link to="/signup"><button className='mx-2 text-white rounded-md bg-blue-500 px-3 py-2 hover:bg-blue-600'>Sign up</button></Link>
-                    <Link to="/login"><button className='mx-2 rounded-md px-3 py-2 bg-blue-500 text-white hover:bg-blue-600'>Sign in</button></Link>
+                <div className='hidden md:flex items-center'>
+                    {authState ? (
+                        <>
+                            <div className='mx-2 text-gray-700'>Welcome, {authState.user.email}</div>
+                            <button onClick={logout} className='mx-2 rounded-md px-3 py-2 bg-blue-500 text-white hover:bg-blue-600'>Logout</button>
+                        </>
+                    ) : (
+                        <>
+                            <Link to="/signup"><button className='mx-2 text-white rounded-md bg-blue-500 px-3 py-2 hover:bg-blue-600'>Sign up</button></Link>
+                            <Link to="/login"><button className='mx-2 rounded-md px-3 py-2 bg-blue-500 text-white hover:bg-blue-600'>Sign in</button></Link>
+                        </>
+                    )}
                 </div>
                 <div className='md:hidden flex items-center'>
                     <button onClick={() => setIsMenuOpen(!isMenuOpen)} className='text-gray-700 focus:outline-none'>
@@ -46,8 +57,17 @@ function Navbar() {
                         <Link to="/" onClick={() => setIsMenuOpen(false)} className='py-2 hover:text-indigo-500 cursor-pointer'>Home</Link>
                         <Link to="/about" onClick={() => setIsMenuOpen(false)} className='py-2 hover:text-indigo-500 cursor-pointer'>About</Link>
                         <Link to="/contact" onClick={() => setIsMenuOpen(false)} className='py-2 hover:text-indigo-500 cursor-pointer'>Contact</Link>
-                        <Link to="/signup" onClick={() => setIsMenuOpen(false)} className='py-2'><button className='text-white rounded-md bg-blue-500 px-3 py-2 w-full'>Sign up</button></Link>
-                        <Link to="/login" onClick={() => setIsMenuOpen(false)} className='py-2'><button className='rounded-md px-3 py-2 hover:bg-blue-500 w-full'>Sign in</button></Link>
+                        {authState ? (
+                            <>
+                                <div className='py-2 text-gray-700'>Welcome, {authState.user.email}</div>
+                                <button onClick={() => { setIsMenuOpen(false); logout(); }} className='py-2 text-white rounded-md bg-blue-500 px-3 w-full'>Logout</button>
+                            </>
+                        ) : (
+                            <>
+                                <Link to="/signup" onClick={() => setIsMenuOpen(false)} className='py-2'><button className='text-white rounded-md bg-blue-500 px-3 py-2 w-full'>Sign up</button></Link>
+                                <Link to="/login" onClick={() => setIsMenuOpen(false)} className='py-2'><button className='rounded-md px-3 py-2 hover:bg-blue-500 w-full'> Sign in </button></Link>
+                            </>
+                        )}
                     </ul>
                 </div>
             )}

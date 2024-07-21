@@ -6,7 +6,7 @@ const videoSchema = new mongoose.Schema({
     type: String, 
     required: true 
   },
-  url: { 
+  videoFile: { 
     type: String, 
     required: true 
   }

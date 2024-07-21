@@ -25,13 +25,16 @@ const UserSchema = new Schema({
     required: true,
     minlength: 8,
     match: [/(?=.*[A-Z])(?=.*\d)(?=.*[\W_])/, 'Password must contain at least one uppercase letter, one digit, and one special character']
+  },
+  refreshToken: {
+    type: String
   }
   
 },{timestamps:true});
 
 //encrypting password before password is saved to database
 UserSchema.pre("save",async function(next){
-  if(this.isModified("password")) return next();
+  if(!this.isModified("password")) return next();
   
   this.password= await bcrypt.hash(this.password,10)
   next()

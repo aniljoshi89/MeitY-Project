@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthProvider';
+import axios from 'axios';
 
 const Login = () => {
     const [formData, setFormData] = useState({
         email: '',
-        password: '',
+        password: ''
     });
+    const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -14,9 +19,23 @@ const Login = () => {
         });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log('Form Data Submitted:', formData);
+
+        try {
+            const response = await axios.post('http://localhost:8000/api/v1/users/login', {
+                email: formData.email,
+                password: formData.password
+            });
+            const { user, token } = response.data.data;
+            console.log(response);
+            login(user, token);
+            alert('Login successful!');
+            navigate('/'); // Redirect to home page
+        } catch (error) {
+            console.error('Error logging in:', error);
+            alert('Error during login: ' + (error.response?.data || error.message));
+        }
     };
 
     return (
@@ -50,6 +69,20 @@ const Login = () => {
                     </div>
                     <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">Login</button>
                 </form>
+                <div className="text-center mt-4">
+                    <Link 
+                        to="/forgot-password" 
+                        className="text-blue-500 hover:underline block mt-2"
+                    >
+                        Forgot Password?
+                    </Link>
+                    <Link 
+                        to="/signup" 
+                        className="text-blue-500 hover:underline block mt-2"
+                    >
+                        New User? Sign Up
+                    </Link>
+                </div>
             </div>
         </div>
     );
