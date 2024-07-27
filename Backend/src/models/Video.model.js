@@ -6,9 +6,21 @@ const videoSchema = new mongoose.Schema({
     type: String, 
     required: true 
   },
-  videoFile: { 
+  videoURL: { 
     type: String, 
     required: true 
+  },
+  description: {
+    type: String, 
+    required: true
+  },
+  duration: {
+    type: Number, 
+    required: true
+  },
+  views: {
+    type: Number,
+    default: 0
   }
 },{timestamps:true});
 //for advance level mongoDB query we use plugin hook

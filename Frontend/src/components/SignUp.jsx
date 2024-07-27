@@ -36,12 +36,12 @@ const SignUp = () => {
             navigate('/login'); // Redirect to login page
         } catch (error) {
             console.error('Error signing up:', error);
-            alert('Error during signup: ' + (error.response?.data || error.message));
+            console.log('Error during signup: ' + (error.response?.data ));
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-500">
             <div className="bg-white p-8 rounded-lg shadow-lg w-96">
                 <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">Sign Up</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">

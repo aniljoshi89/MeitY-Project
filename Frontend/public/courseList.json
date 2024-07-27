@@ -1,0 +1,26 @@
+[
+  {
+    "title": "Introduction to Programming",
+    "description": "Learn the basics of programming using Python. This course is designed to introduce you to fundamental programming concepts, including variables, control structures, functions, and more.",
+    "videos": [],
+    "courseDuration": "6 weeks",
+    "startDate": "2024-08-01T00:00:00.000Z",
+    "endDate": "2024-09-12T00:00:00.000Z"
+  },
+  {
+    "title": "Advanced JavaScript",
+    "description": "Deep dive into JavaScript with a focus on advanced topics such as asynchronous programming, ES6 features, and advanced DOM manipulation. This course is ideal for those with a basic understanding of JavaScript who want to enhance their skills.",
+    "videos": [],
+    "courseDuration": "8 weeks",
+    "startDate": "2024-09-01T00:00:00.000Z",
+    "endDate": "2024-10-26T00:00:00.000Z"
+  },
+  {
+    "title": "Web Development Basics",
+    "description": "This course introduces HTML, CSS, and basic JavaScript concepts. Learn how to build responsive websites, apply modern web design practices, and understand fundamental web development technologies.",
+    "videos": [],
+    "courseDuration": "5 weeks",
+    "startDate": "2024-07-15T00:00:00.000Z",
+    "endDate": "2024-08-18T00:00:00.000Z"
+  }
+]

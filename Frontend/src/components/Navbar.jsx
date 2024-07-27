@@ -5,6 +5,7 @@ import logo from '../images/logo.jpg';
 
 function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
     const { authState, logout } = useAuth();
 
     return (
@@ -28,10 +29,28 @@ function Navbar() {
                 </div>
                 <div className='hidden md:flex items-center'>
                     {authState ? (
-                        <>
-                            <div className='mx-2 text-gray-700'>Welcome, {authState.user.email}</div>
-                            <button onClick={logout} className='mx-2 rounded-md px-3 py-2 bg-blue-500 text-white hover:bg-blue-600'>Logout</button>
-                        </>
+                        <div className='relative'>
+                            <img
+                                src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"
+                                alt="User"
+                                className='w-8 h-8 rounded-full mx-2 cursor-pointer'
+                                onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                            />
+                            {isProfileDropdownOpen && (
+                                <div className='absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md py-2 z-50'>
+                                    <div className='px-4 py-2 text-gray-700'>{authState.user.email}</div>
+                                    <Link to="/update-username" className='block px-4 py-2 text-gray-700 hover:bg-gray-100'>Update Username</Link>
+                                    <Link to="/change-password" className='block px-4 py-2 text-gray-700 hover:bg-gray-100'>Change Password</Link>
+                                    <Link to="/enrolled-courses" className='block px-4 py-2 text-gray-700 hover:bg-gray-100'>Enrolled Courses</Link>
+                                    <button
+                                        onClick={logout}
+                                        className='w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100'
+                                    >
+                                        Logout
+                                    </button>
+                                </div>
+                            )}
+                        </div>
                     ) : (
                         <>
                             <Link to="/signup"><button className='mx-2 text-white rounded-md bg-blue-500 px-3 py-2 hover:bg-blue-600'>Sign up</button></Link>
@@ -52,20 +71,40 @@ function Navbar() {
                 </div>
             </nav>
             {isMenuOpen && (
-                <div className='md:hidden bg-white shadow-md'>
+                <div className='md:hidden bg-white shadow-md z-50'>
                     <ul className='flex flex-col items-center'>
                         <Link to="/" onClick={() => setIsMenuOpen(false)} className='py-2 hover:text-indigo-500 cursor-pointer'>Home</Link>
                         <Link to="/about" onClick={() => setIsMenuOpen(false)} className='py-2 hover:text-indigo-500 cursor-pointer'>About</Link>
                         <Link to="/contact" onClick={() => setIsMenuOpen(false)} className='py-2 hover:text-indigo-500 cursor-pointer'>Contact</Link>
                         {authState ? (
                             <>
-                                <div className='py-2 text-gray-700'>Welcome, {authState.user.email}</div>
-                                <button onClick={() => { setIsMenuOpen(false); logout(); }} className='py-2 text-white rounded-md bg-blue-500 px-3 w-full'>Logout</button>
+                                <img
+                                    src="https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"
+                                    alt="User"
+                                    className='w-8 h-8 rounded-full my-2 cursor-pointer'
+                                    onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
+                                />
+                                {isProfileDropdownOpen && (
+                                    <div className='bg-white shadow-md w-full z-50'>
+                                        <ul className='flex flex-col items-center'>
+                                            <div className='px-4 py-2 text-gray-700'>{authState.user.email}</div>
+                                            <Link to="/update-username" className='block px-4 py-2 text-gray-700 hover:bg-gray-100' onClick={() => setIsProfileDropdownOpen(false)}>Update Username</Link>
+                                            <Link to="/change-password" className='block px-4 py-2 text-gray-700 hover:bg-gray-100' onClick={() => setIsProfileDropdownOpen(false)}>Change Password</Link>
+                                            <Link to="/enrolled-courses" className='block px-4 py-2 text-gray-700 hover:bg-gray-100' onClick={() => setIsProfileDropdownOpen(false)}>Enrolled Courses</Link>
+                                            <button
+                                                onClick={() => { setIsMenuOpen(false); setIsProfileDropdownOpen(false); logout(); }}
+                                                className='w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100'
+                                            >
+                                                Logout
+                                            </button>
+                                        </ul>
+                                    </div>
+                                )}
                             </>
                         ) : (
                             <>
                                 <Link to="/signup" onClick={() => setIsMenuOpen(false)} className='py-2'><button className='text-white rounded-md bg-blue-500 px-3 py-2 w-full'>Sign up</button></Link>
-                                <Link to="/login" onClick={() => setIsMenuOpen(false)} className='py-2'><button className='rounded-md px-3 py-2 hover:bg-blue-500 w-full'> Sign in </button></Link>
+                                <Link to="/login" onClick={() => setIsMenuOpen(false)} className='py-2'><button className='rounded-md px-3 py-2 hover:bg-blue-500 w-full'>Sign in</button></Link>
                             </>
                         )}
                     </ul>

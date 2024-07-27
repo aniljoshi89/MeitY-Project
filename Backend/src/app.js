@@ -22,9 +22,13 @@ app.use(cookieParser());
 
 //routes import
 import userRouter from "./routes/user.route.js";
+import enrollRouter from "./routes/enroll.route.js"
+import courseRouter from "./routes/course.route.js"
 
 //routes declaration
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/enroll", enrollRouter);
+app.use("/api/v1/course", courseRouter);
 
 //  http://localhost:8000/api/v1/users/signUp
 export { app }
