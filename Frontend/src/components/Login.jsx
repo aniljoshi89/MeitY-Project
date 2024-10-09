@@ -27,13 +27,13 @@ const Login = () => {
                 email: formData.email,
                 password: formData.password
             });
-            const { user, token } = response.data.data;
-            login(user, token);
+            const { user, accessToken, refreshToken } = response.data.data;
+            login(user, accessToken, refreshToken);
             alert('Login successful!');
             navigate('/'); // Redirect to home page
         } catch (error) {
             console.error('Error logging in:', error);
-            alert('Error during login: ' + (error.response?.data || error.message));
+            alert('Error during login: ' + (error.response?.data?.message || error.message));
         }
     };
 

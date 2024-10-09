@@ -28,8 +28,11 @@ const UserSchema = new Schema({
   },
   refreshToken: {
     type: String
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false
   }
-  
 },{timestamps:true});
 
 //encrypting password before password is saved to database

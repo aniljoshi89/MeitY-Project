@@ -13,6 +13,7 @@ import ChangePassword from './components/ChangePassword';
 import AdminDashboard from './components/AdminDashboard';
 import AdminLogin from './components/AdminLogin';
 import AllCourses from './components/AllCourses';
+import VideoForm from './components/VideoForm';
 
 function App() {
     return (
@@ -31,6 +32,7 @@ function App() {
                     <Route path="/admin" element={<AdminDashboard />} />
                     <Route path="/admin/login" element={<AdminLogin />} />
                     <Route path="/all-courses" element={<AllCourses />} />
+                    <Route path="/video-edit" element={<VideoForm />} />
                 </Routes>
             </BrowserRouter>
         </AuthProvider>

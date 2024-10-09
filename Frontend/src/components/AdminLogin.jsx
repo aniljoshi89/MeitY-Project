@@ -1,31 +1,45 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useAuth } from './AuthProvider';
 
 const AdminLogin = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const navigate = useNavigate();
+    const { login } = useAuth();
 
     const handleLogin = async (e) => {
         e.preventDefault();
         setError('');
 
         try {
-            const response = await axios.post('/api/login', { email, password });
-            if (response.data.user.role === 'admin') {
-                // Save tokens and user info in local storage or context
-                localStorage.setItem('accessToken', response.data.accessToken);
-                localStorage.setItem('refreshToken', response.data.refreshToken);
-                localStorage.setItem('user', JSON.stringify(response.data.user));
+            const response = await axios.post('http://localhost:8000/api/v1/users/login', { email, password });
 
-                navigate('/admin/dashboard');
+            const data = response.data.data;
+
+            // Check if the data object and required properties exist
+            if (data && data.user && data.accessToken && data.refreshToken) {
+                if (data.user.isAdmin === true) {
+                    // Save tokens and user info in local storage or context
+                    login(data.user, data.accessToken);
+
+                    console.log('Stored user:', localStorage.getItem('user'));
+
+                    alert('Admin login successful!');
+                    // Navigate to admin dashboard
+                    navigate('/admin');
+                } else {
+                    setError('Access denied. Admins only.');
+                }
             } else {
-                setError('Access denied. Admins only.');
+                setError('Unexpected response format from the server.');
+                console.error('Unexpected response format:', response.data);
             }
         } catch (error) {
             setError('Invalid email or password.');
+            console.error('Login error:', error);
         }
     };
 

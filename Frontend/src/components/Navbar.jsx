@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
 import { useAuth } from './AuthProvider';
 import logo from '../images/logo.jpg';
 
@@ -7,6 +7,15 @@ function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
     const { authState, logout } = useAuth();
+    const navigate = useNavigate(); // Create navigate instance
+
+    const handleLogout = async () => {
+        setIsProfileDropdownOpen(false); 
+        await logout(); 
+        setIsMenuOpen(false); 
+        alert('Successfully logged out.');
+        navigate('/'); // Navigate to home page after logout
+    };
 
     return (
         <>
@@ -43,7 +52,7 @@ function Navbar() {
                                     <Link to="/change-password" className='block px-4 py-2 text-gray-700 hover:bg-gray-100'>Change Password</Link>
                                     <Link to="/enrolled-courses" className='block px-4 py-2 text-gray-700 hover:bg-gray-100'>Enrolled Courses</Link>
                                     <button
-                                        onClick={logout}
+                                        onClick={handleLogout} // Use the handleLogout function
                                         className='w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100'
                                     >
                                         Logout
@@ -92,7 +101,7 @@ function Navbar() {
                                             <Link to="/change-password" className='block px-4 py-2 text-gray-700 hover:bg-gray-100' onClick={() => setIsProfileDropdownOpen(false)}>Change Password</Link>
                                             <Link to="/enrolled-courses" className='block px-4 py-2 text-gray-700 hover:bg-gray-100' onClick={() => setIsProfileDropdownOpen(false)}>Enrolled Courses</Link>
                                             <button
-                                                onClick={() => { setIsMenuOpen(false); setIsProfileDropdownOpen(false); logout(); }}
+                                                onClick={handleLogout} // Use the handleLogout function
                                                 className='w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100'
                                             >
                                                 Logout

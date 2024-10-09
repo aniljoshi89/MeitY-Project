@@ -48,7 +48,7 @@ const courseData = {
         endDate: "2024-08-18",
         lectures: [
             { id: 13, title: "HTML Basics", url: "https://www.example.com/video13.mp4", thumbnail: "https://via.placeholder.com/640x360" },
-            { id: 14, title: "CSS Basics", url: "https://www.example.com/video14.mp4", thumbnail: "https://via.placeholder.com/640x360" },
+            { id: 14, title: "CSS Basics", url: "https://res.cloudinary.com/dqjsecd29/video/upload/v1722279835/2278095-hd_1920_1080_30fps_xzyukt.mp4", thumbnail: "https://via.placeholder.com/640x360" },
             { id: 15, title: "Responsive Design", url: "https://www.example.com/video15.mp4", thumbnail: "https://via.placeholder.com/640x360" },
             { id: 16, title: "Flexbox and Grid", url: "https://www.example.com/video16.mp4", thumbnail: "https://via.placeholder.com/640x360" },
             { id: 17, title: "JavaScript in Web Development", url: "https://www.example.com/video17.mp4", thumbnail: "https://via.placeholder.com/640x360" },

@@ -8,7 +8,6 @@ const AllCourses = () => {
       const getCourse = async () => {
         try {
           const res = await axios.get("http://localhost:8000/api/v1/course");
-          console.log(res.data.data.course);
           setCourse(res.data.data.course);
         } catch (error) {
           console.log(error);

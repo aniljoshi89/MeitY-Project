@@ -1,26 +1,48 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from './AuthProvider';
+import VideoForm from './VideoForm';
 
 const AdminDashboard = () => {
     const { authState } = useAuth();
-    const [users, setUsers] = useState([
-        { _id: '1', username: 'Anil Joshi', email: 'Anil180726@example.com' },
-        { _id: '2', username: 'Kundan Kumar', email: 'kundan234@example.com' }
-    ]);
-    const [courses, setCourses] = useState([
-        { _id: '1', title: 'Introduction to Programming', description: 'Learn the basics of programming using Python.', videos: [] },
-        { _id: '2', title: 'Advanced JavaScript', description: 'Deep dive into JavaScript and learn advanced concepts.', videos: [] },
-        { _id: '3', title: 'Web Development Basics', description: 'Understand the fundamentals of web development.', videos: [] }
-    ]);
+    const [users, setUsers] = useState([]);
+    useEffect(() => {
+      const getUser = async () => {
+        try {
+          const res = await axios.get("http://localhost:8000/api/v1/users/get-users");
+          setUsers(res.data.data.user);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      getUser();
+    }, []);
+
+    const [courses, setCourse] = useState([]);
+    useEffect(() => {
+      const getCourse = async () => {
+        try {
+          const res = await axios.get("http://localhost:8000/api/v1/course");
+          setCourse(res.data.data.course);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      getCourse();
+    }, []);
+    
     const [newCourseTitle, setNewCourseTitle] = useState('');
     const [newCourseDescription, setNewCourseDescription] = useState('');
+    const [newCourseDuration, setNewCourseDuration] = useState('');
+    const [newCourseStartDate, setNewCourseStartDate] = useState('');
+    const [newCourseEndDate, setNewCourseEndDate] = useState('');
     const [selectedCourse, setSelectedCourse] = useState(null);
-    const [newVideoTitle, setNewVideoTitle] = useState('');
-    const [newVideoUrl, setNewVideoUrl] = useState('');
     const [editingCourse, setEditingCourse] = useState(null);
     const [editCourseTitle, setEditCourseTitle] = useState('');
     const [editCourseDescription, setEditCourseDescription] = useState('');
+    const [editCourseDuration, setEditCourseDuration] = useState('');
+    const [editCourseStartDate, setEditCourseStartDate] = useState('');
+    const [editCourseEndDate, setEditCourseEndDate] = useState('');
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -57,7 +79,10 @@ const AdminDashboard = () => {
         try {
             const response = await axios.post('/api/admin/courses', {
                 title: newCourseTitle,
-                description: newCourseDescription
+                description: newCourseDescription,
+                duration: newCourseDuration,
+                startDate: newCourseStartDate,
+                endDate: newCourseEndDate
             }, {
                 headers: {
                     Authorization: `Bearer ${authState.accessToken}`
@@ -66,6 +91,9 @@ const AdminDashboard = () => {
             setCourses([...courses, response.data]);
             setNewCourseTitle('');
             setNewCourseDescription('');
+            setNewCourseDuration('');
+            setNewCourseStartDate('');
+            setNewCourseEndDate('');
         } catch (error) {
             console.error('Error adding course:', error);
         }
@@ -88,13 +116,19 @@ const AdminDashboard = () => {
         setEditingCourse(course);
         setEditCourseTitle(course.title);
         setEditCourseDescription(course.description);
+        setEditCourseDuration(course.courseDuration);
+        setEditCourseStartDate(course.startDate);
+        setEditCourseEndDate(course.endDate);
     };
 
     const handleSaveCourse = async () => {
         try {
             const response = await axios.put(`/api/admin/courses/${editingCourse._id}`, {
                 title: editCourseTitle,
-                description: editCourseDescription
+                description: editCourseDescription,
+                duration: editCourseDuration,
+                startDate: editCourseStartDate,
+                endDate: editCourseEndDate
             }, {
                 headers: {
                     Authorization: `Bearer ${authState.accessToken}`
@@ -104,37 +138,26 @@ const AdminDashboard = () => {
             setEditingCourse(null);
             setEditCourseTitle('');
             setEditCourseDescription('');
+            setEditCourseDuration('');
+            setEditCourseStartDate('');
+            setEditCourseEndDate('');
         } catch (error) {
             console.error('Error editing course:', error);
         }
     };
 
-    const handleAddVideoToCourse = async () => {
-        try {
-            const response = await axios.post(`/api/admin/courses/${selectedCourse}/videos`, {
-                title: newVideoTitle,
-                url: newVideoUrl
-            }, {
-                headers: {
-                    Authorization: `Bearer ${authState.accessToken}`
-                }
-            });
-            const updatedCourses = courses.map(course => {
-                if (course._id === selectedCourse) {
-                    return {
-                        ...course,
-                        videos: [...course.videos, response.data]
-                    };
-                }
-                return course;
-            });
-            setCourses(updatedCourses);
-            setNewVideoTitle('');
-            setNewVideoUrl('');
-            setSelectedCourse(null);
-        } catch (error) {
-            console.error('Error adding video to course:', error);
-        }
+    const handleVideoAdded = (newVideo) => {
+        const updatedCourses = courses.map(course => {
+            if (course._id === selectedCourse) {
+                return {
+                    ...course,
+                    videos: [...course.videos, newVideo]
+                };
+            }
+            return course;
+        });
+        setCourses(updatedCourses);
+        setSelectedCourse(null);
     };
 
     const handleDeleteUser = async (userId) => {
@@ -172,6 +195,9 @@ const AdminDashboard = () => {
                             <div>
                                 <h3 className="text-xl font-semibold text-gray-800">{course.title}</h3>
                                 <p className="text-gray-600">{course.description}</p>
+                                <p className="text-gray-500">Duration: {course.courseDuration}</p>
+                                <p className="text-gray-500">Start Date: {course.startDate}</p>
+                                <p className="text-gray-500">End Date: {course.endDate}</p>
                             </div>
                             <div className="flex space-x-2">
                                 <button onClick={() => handleDeleteCourse(course._id)} className="bg-red-600 text-white py-2 px-4 rounded-md hover:bg-red-700">Delete</button>
@@ -184,19 +210,58 @@ const AdminDashboard = () => {
                 {editingCourse ? (
                     <div className="mb-6">
                         <h3 className="text-xl font-semibold mb-4 text-gray-800">Edit Course</h3>
-                        <input
-                            type="text"
-                            placeholder="Course Title"
-                            value={editCourseTitle}
-                            onChange={e => setEditCourseTitle(e.target.value)}
-                            className="block w-full mb-4 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500"
-                        />
-                        <textarea
-                            placeholder="Course Description"
-                            value={editCourseDescription}
-                            onChange={e => setEditCourseDescription(e.target.value)}
-                            className="block w-full mb-4 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500"
-                        ></textarea>
+                        <div className="mb-4">
+                            <label htmlFor="editCourseTitle" className="block text-gray-700">Course Title</label>
+                            <input
+                                id="editCourseTitle"
+                                type="text"
+                                placeholder="Course Title"
+                                value={editCourseTitle}
+                                onChange={e => setEditCourseTitle(e.target.value)}
+                                className="block w-full mt-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500"
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="editCourseDescription" className="block text-gray-700">Course Description</label>
+                            <textarea
+                                id="editCourseDescription"
+                                placeholder="Course Description"
+                                value={editCourseDescription}
+                                onChange={e => setEditCourseDescription(e.target.value)}
+                                className="block w-full mt-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500"
+                            ></textarea>
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="editCourseDuration" className="block text-gray-700">Course Duration</label>
+                            <input
+                                id="editCourseDuration"
+                                type="text"
+                                placeholder="Course Duration"
+                                value={editCourseDuration}
+                                onChange={e => setEditCourseDuration(e.target.value)}
+                                className="block w-full mt-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500"
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="editCourseStartDate" className="block text-gray-700">Start Date</label>
+                            <input
+                                id="editCourseStartDate"
+                                type="date"
+                                value={editCourseStartDate}
+                                onChange={e => setEditCourseStartDate(e.target.value)}
+                                className="block w-full mt-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500"
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="editCourseEndDate" className="block text-gray-700">End Date</label>
+                            <input
+                                id="editCourseEndDate"
+                                type="date"
+                                value={editCourseEndDate}
+                                onChange={e => setEditCourseEndDate(e.target.value)}
+                                className="block w-full mt-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500"
+                            />
+                        </div>
                         <div className="flex justify-center">
                             <button onClick={handleSaveCourse} className="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">Save</button>
                         </div>
@@ -204,19 +269,58 @@ const AdminDashboard = () => {
                 ) : (
                     <div className="mb-6">
                         <h3 className="text-xl font-semibold mb-4 text-gray-800">Add New Course</h3>
-                        <input
-                            type="text"
-                            placeholder="Course Title"
-                            value={newCourseTitle}
-                            onChange={e => setNewCourseTitle(e.target.value)}
-                            className="block w-full mb-4 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500"
-                        />
-                        <textarea
-                            placeholder="Course Description"
-                            value={newCourseDescription}
-                            onChange={e => setNewCourseDescription(e.target.value)}
-                            className="block w-full mb-4 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500"
-                        ></textarea>
+                        <div className="mb-4">
+                            <label htmlFor="newCourseTitle" className="block text-gray-700">Course Title</label>
+                            <input
+                                id="newCourseTitle"
+                                type="text"
+                                placeholder="Course Title"
+                                value={newCourseTitle}
+                                onChange={e => setNewCourseTitle(e.target.value)}
+                                className="block w-full mt-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500"
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="newCourseDescription" className="block text-gray-700">Course Description</label>
+                            <textarea
+                                id="newCourseDescription"
+                                placeholder="Course Description"
+                                value={newCourseDescription}
+                                onChange={e => setNewCourseDescription(e.target.value)}
+                                className="block w-full mt-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500"
+                            ></textarea>
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="newCourseDuration" className="block text-gray-700">Course Duration</label>
+                            <input
+                                id="newCourseDuration"
+                                type="text"
+                                placeholder="Course Duration"
+                                value={newCourseDuration}
+                                onChange={e => setNewCourseDuration(e.target.value)}
+                                className="block w-full mt-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500"
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="newCourseStartDate" className="block text-gray-700">Start Date</label>
+                            <input
+                                id="newCourseStartDate"
+                                type="date"
+                                value={newCourseStartDate}
+                                onChange={e => setNewCourseStartDate(e.target.value)}
+                                className="block w-full mt-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500"
+                            />
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="newCourseEndDate" className="block text-gray-700">End Date</label>
+                            <input
+                                id="newCourseEndDate"
+                                type="date"
+                                value={newCourseEndDate}
+                                onChange={e => setNewCourseEndDate(e.target.value)}
+                                className="block w-full mt-1 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500"
+                            />
+                        </div>
                         <div className="flex justify-center">
                             <button onClick={handleAddCourse} className="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700">Add Course</button>
                         </div>
@@ -224,26 +328,7 @@ const AdminDashboard = () => {
                 )}
             </section>
             {selectedCourse && (
-                <section className="bg-white shadow-md rounded-lg p-6 mb-8">
-                    <h2 className="text-2xl font-semibold mb-4 text-gray-800">Add Video to Course</h2>
-                    <input
-                        type="text"
-                        placeholder="Video Title"
-                        value={newVideoTitle}
-                        onChange={e => setNewVideoTitle(e.target.value)}
-                        className="block w-full mb-4 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500"
-                    />
-                    <input
-                        type="text"
-                        placeholder="Video URL"
-                        value={newVideoUrl}
-                        onChange={e => setNewVideoUrl(e.target.value)}
-                        className="block w-full mb-4 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-blue-500"
-                    />
-                    <div className="flex justify-center">
-                        <button onClick={handleAddVideoToCourse} className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">Add Video</button>
-                    </div>
-                </section>
+                <VideoForm courseId={selectedCourse} onVideoAdded={handleVideoAdded} />
             )}
         </div>
     );

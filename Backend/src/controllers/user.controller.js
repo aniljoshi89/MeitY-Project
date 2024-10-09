@@ -105,7 +105,8 @@ const loginUser = asyncHandler(async (req, res) =>{
    //cookies not modifiable from frontend
     const options = {
         httpOnly: true,
-        secure: true
+        secure: true,
+        sameSite: 'Lax'
     }
 
     return res
@@ -199,6 +200,10 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 const changeUserPassword = asyncHandler(async(req, res) => {
     const {oldPassword, newPassword} = req.body;
 
+    if (!oldPassword || !newPassword) {
+        throw new ApiError(400, 'Old password and new password are required');
+    }
+    
     const user = await User.findById(req.user?._id)
     const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
 
@@ -214,8 +219,26 @@ const changeUserPassword = asyncHandler(async(req, res) => {
     .json(new ApiResponse(200, {}, "Password changed successfully"))
 })
 
+// Get all users
+const getUser=asyncHandler(async(req,res)=>{
+    const user=await User.find();
+    res
+    .status(200)
+    .json(
+        new ApiResponse(
+            200,
+            {user},
+            "user fetched successfully"
+        )
+    );
 
-export {registerUser,refreshAccessToken, loginUser, logoutUser, changeUserPassword};
+    if(!user){
+        throw new ApiError(500,"user not found");
+    }
+})
+
+
+export {registerUser,refreshAccessToken, loginUser, logoutUser, getUser,changeUserPassword};
 
 
 

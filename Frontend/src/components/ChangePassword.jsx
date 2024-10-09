@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthProvider'; // Ensure useAuth is imported correctly
 import axios from 'axios';
 
 const ChangePassword = () => {
@@ -7,6 +8,7 @@ const ChangePassword = () => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
+    const { authState, logout } = useAuth(); // Get authState and logout function
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -19,20 +21,31 @@ const ChangePassword = () => {
             return;
         }
 
+        if (!authState || !authState.accessToken) {
+            setError('No authentication token found. Please log in again.');
+            return;
+        }
+
         try {
-            const response = await axios.post('http://localhost:8000/api/v1/change-password', {
-                currentPassword,
+            const response = await axios.post('http://localhost:8000/api/v1/users/change-password', {
+                oldPassword: currentPassword, // Adjusted key name
                 newPassword
             }, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem('token')}` // Assuming you store the token in localStorage
+                    Authorization: `Bearer ${authState.accessToken}`
                 }
             });
 
             alert(response.data.message);
             navigate('/'); // Redirect to homepage or any other page
         } catch (error) {
-            setError(error.response?.data?.message || 'Error changing password');
+            if (error.response?.status === 401) {
+                // Token might be expired or invalid
+                await logout(); // Log out the user
+                setError('Session expired. Please log in again.');
+            } else {
+                setError(error.response?.data?.message || 'Error changing password');
+            }
         }
     };
 
